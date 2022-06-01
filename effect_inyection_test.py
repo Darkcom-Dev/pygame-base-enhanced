@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  Efect_inyection_test.xcf
+#  effect_inyection_test.xcf
 #  
 
 # ------------------------------------------------------------ Imports
@@ -98,8 +98,7 @@ def main(args):
 	
 	print(type(rectangulo))
 	
-	
-	
+
 	while 1:
 		for event in pg.event.get():
 			if event.type == pg.QUIT:
