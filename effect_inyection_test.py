@@ -1,9 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  effect_inyection_test.xcf
+#  effect_inyection_test.py
 #  
+'''
+No se si esto funcionará a futuro.
+Este archivo es un experimento, la intencion es ver si se puede inyectar
+efectos a distintos tipos de figuras como circulos, cuadrados, fuentes,
+lineas etc.
 
+Los efectos ya se encuentran creados pero de forma un tanto caotica en
+otra clase.
+- Separar la clase efectos por una clase para cada efecto
+- Ver si es posible las interfaces en comun para distintos efectos.
+- Crear versiones del efecto que sirvan para distintos dibujos.
+
+'''
 # ------------------------------------------------------------ Imports
 import pygame as pg
 import sys
@@ -89,14 +101,6 @@ def main(args):
 	
 	font = pg.font.SysFont('Arial',20)
 	efect = Chromatic_Aberration(font, 'Hola mundo', (128,255,255),3,(300,200),'br')
-	
-	# -------------------------
-	# Hay que intentar lograr el mismo efecto con un rectangulo
-	
-	fnt_rect = pg.Rect(100,100,100,50)
-	rectangulo = pg.draw.rect(root,(128,255,255),fnt_rect,3,10)
-	
-	print(type(rectangulo))
 	
 
 	while 1:

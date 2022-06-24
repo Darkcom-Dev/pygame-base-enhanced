@@ -12,12 +12,38 @@ import pygame as pg
 
 # ------------------------------------------------------------ Classes
 class Button():
-	def __init__(self,rect, text = 'text', **kwargs):
-		self.in_rect = bool()
-		self.enabled = True
-		self.rect = rect
+	"""
+	Create a functional button using pygame.draw.rect and pygame.font
+	require import pygame
+			
+	TODO:
+	- Separate color rect out of color font.
+	- Separate colors generate very amount of arguments, considere use a style dict.
+	- Integrate effects from outline, shadow and chromatic classes.
+	- Make that configure method apply changes.
+	"""
+	def __init__(self, rect, text = 'text', onclickFunction = None, **kwargs):
+		"""
+		Constructor fucntion for the class
 		
-		self.kwargs = kwargs
+		args:
+		---
+		rect: pygame.Rect
+		text: str # better name label
+		onclickFunction: any Python function or method name
+		kwargs: dict
+		
+		return:
+		---
+		None
+		"""
+		
+
+		# Rect for rect frame, also used for text aligment
+		self.rect = rect
+		# text aligment
+		self.align = 'center'
+		self.valign = 'mid'
 		
 		# normal_color, enabled and out of bounds
 		self.normal_color = (170,170,170)
@@ -27,19 +53,37 @@ class Button():
 		self.clicked_color = (170,170,170)
 		# disabled color, disabled
 		self.disabled_color = (75,75,75)
-		# command in string
-		self.command = "print('Hola desde button')"
-		# text
-		self.text = text
+
+		# On Click Function
+		self.onclickFunction = onclickFunction
+
+		# Optional arguments for button class
+		self.kwargs = kwargs
 		if self.kwargs != None:
 			self.configure(self.kwargs)
 		
+		# private boolean variable events, posible read only return 
+		self.in_rect = bool()
+		self.enabled = True
 		self._event = {'clicked': False, 'highlighted' : False}
 		
+		# text content for button label
+		self.text = text
 		self.font = pg.font.SysFont('Arial',20)
 		
 		
-	def draw(self,screen):
+	def draw(self, screen):
+		"""
+		Draw a rect frame and text label for button
+		
+		args:
+		---
+		screen : pygame.Surface
+		
+		return:
+		---
+		None
+		"""
 		
 		fnt_render = self.font.render(self.text,True,self.disabled_color)
 		
@@ -56,7 +100,8 @@ class Button():
 					pg.draw.rect(screen,self.clicked_color,self.rect,3,10)
 					fnt_render = self.font.render(self.text,True,self.clicked_color)
 					if self._event['clicked'] == False:
-						exec(self.command)
+						
+						if self.onclickFunction != None: self.onclickFunction()
 					self._event['clicked'] = True
 					
 			else: # Highlight
@@ -73,11 +118,40 @@ class Button():
 		else:
 			pg.draw.rect(screen,self.disabled_color,self.rect,3,10)
 			fnt_render = self.font.render(self.text,True,self.disabled_color)
-			
-		screen.blit(fnt_render,(self.rect[0] + 10, self.rect[1] + 10, self.rect[2] - 10, self.rect[3] - 10))
+		
+		# Dibuja la fuente en pantalla
+		# Alinear texto en rectangulo
+		
+		align_x = self.rect[0]
+		if self.align == 'left':
+			align_x += 10 # 10 es el border radius
+		elif self.align == 'center':
+			align_x += self.rect[2] // 2 - fnt_render.get_width() // 2
+		elif self.align == 'right':
+			align_x += (self.rect[2] - fnt_render.get_width() - 10)
+		
+		align_y = self.rect[1]
+		if self.valign == 'top':
+			align_y += 10 # 10 es el border radius
+		elif self.valign == 'mid':
+			align_y += self.rect[3] // 2 - fnt_render.get_height() // 2
+		elif self.valign == 'bottom':
+			align_y += (self.rect[3] - fnt_render.get_height() - 10)
+		
+		screen.blit(fnt_render,(align_x, align_y, self.rect[2] - 10, self.rect[3] - 10))
 			
 	def configure (self, kwargs):
-		""" Function doc """
+		""" 
+		Method that configure arguments from a dictionary
+		
+		args:
+		---
+		kwargs: dict
+		
+		return:
+		---
+		None
+		"""
 		self.kwargs = {**kwargs, **self.kwargs} # Merge various dictionaries
 		
 		if 'normal_color' in self.kwargs:
@@ -90,36 +164,43 @@ class Button():
 			self.disabled_color = self.kwargs['disabled_color']
 		elif 'enabled' in self.kwargs:
 			self.enabled = self.kwargs['enabled']
-		elif 'command' in self.kwargs:
-			self.command = self.kwargs['command']
+		elif 'onclickFunction' in self.kwargs:
+			self.onclickFunction = self.kwargs['onclickFunction']
 		elif 'text' in self.kwargs:
 			self.text = self.kwargs['text']
+		elif 'align' in self.kwargs:
+			self.align = self.kwargs['align']
+		elif 'valign' in self.kwargs:
+			self.valign = self.kwargs['valign']
 		else:
 			pass
 # -------------------------------------------------..... Program entry
 
-def holis ():
-	""" Function doc """
-	print('holis')
+def default_test ():
+	""" Test Function for button command, return none"""
+	print('\x1b[96mMessage from default test function in button module for Button class.\x1b[0m')
 
 def main ():
 	""" Entry function program """
 	
 	pg.init()
 	display = pg.display.set_mode((600, 400))
-	display.fill((13,17,23))
+	
 	pg.display.set_caption('Button test class')
 	
-	rect = pg.Rect(200,280,150,30)
-
-	test_button = Button(rect,'Hola mundo',command = "holis()")
+	# Button creation
+	rect = pg.Rect(200,300,250,75)
+	test_button = Button(rect, 'Hola mundo', default_test)
+	# Changing color directly
 	test_button.normal_color = (125, 0, 0)
-	print(test_button.command)
-	test_button.configure({"highlight_color" : (75, 0 , 0), "clicked_color" : (0, 75,75), "disabled_color" : (0, 0, 75)})
-
+	# Changing style from configure function - NOT FUNCTIONAL
+	test_button.configure({"highlight_color" : (75, 0 , 0), "clicked_color" : (0, 75,75), "disabled_color" : (0, 0, 75), "align" : "right", "valign" : "bottom"})
+	
 	
 	while 1:
 		
+		test_button.text = str(pg.mouse.get_pos())
+		display.fill((13,17,23))
 		test_button.draw(display)
 		
 		for event in pg.event.get():
@@ -127,7 +208,6 @@ def main ():
 				sys.exit()
 		pg.display.update()
 	return 0
-
 
 if __name__ == '__main__':
 	main()
