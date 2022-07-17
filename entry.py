@@ -38,25 +38,37 @@ class Entry:
 	"""
 	
 	def __init__ (self, rect, color, limit = 40, password = ''):
-		""" Class initialiser """
+		""" 
+		Class initialiser 
+		
+		rect : rect for input field siaze
+		color : color text and frame
+		limit : maxium char size
+		password : char for hide password
+		"""
 		self.rect = rect
 		self.color = color
 		self.text = ''
 		
 		self.limit = limit
 		self.password = password # Fillchar
-		self.font_size = 20
-		self.max_limit = 0
+		self.font_size = 20 # Size of char
+		self.max_limit = self.rect[2] // (12) # 12 is fixed char_size, find other formula
 		
 		self.font = pg.font.SysFont('Arial',self.font_size)
 		
 		
 	def draw (self, screen):
-		""" Function doc """
+		""" 
+		Draw function.
+		---
+		parameters:
+		screen : pg.Surface
+		"""
 		pg.draw.rect(screen, self.color, self.rect, 1)
 		
 		show_text = ''
-		# ~ if len(self.text) < self.limit and self.limit > 0:
+		
 		if self.password == '':
 			if self.font.size(self.text)[0] <= self.rect[2]:
 				show_text = self.text[0:self.limit]
@@ -76,7 +88,12 @@ class Entry:
 		screen.blit(fnt_render,(self.rect[0] + 3, self.rect[1] + 3, self.rect[2] - 10, self.rect[3] - 10))
 		
 	def input (self, key):
-		""" Function doc """
+		""" 
+		Get integer from key events and convert to char
+		parameters:
+		key : int -> get data from key events
+		
+		"""
 		print(key)
 		
 		self.max_limit = self.rect[2] // (12)

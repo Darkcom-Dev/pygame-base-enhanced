@@ -3,6 +3,7 @@ Pygame base project with extra classes to facilitate some task
 
 ## Log
 ### Widgets
+- Added entry widget class.
 - Added button widget class.
 - Added menu based in button widget.
 - Added checkbox widget based in button widget.
