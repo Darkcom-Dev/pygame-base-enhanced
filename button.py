@@ -194,8 +194,25 @@ def main ():
 	# Changing color directly
 	test_button.normal_color = (125, 0, 0)
 	# Changing style from configure function - NOT FUNCTIONAL
-	test_button.configure({"highlight_color" : (75, 0 , 0), "clicked_color" : (0, 75,75), "disabled_color" : (0, 0, 75), "align" : "right", "valign" : "bottom"})
 	
+	print(f'previo: {test_button.highlight_color}')
+	
+	new_config = {	"highlight_color" : (0, 75 , 0), 
+					"clicked_color" : (0, 75,75), 
+					"disabled_color" : (0, 0, 75), 
+					"align" : "right", 
+					"valign" : "bottom"}
+	test_button.configure(new_config)
+	
+	print(f'en configuracion: {test_button.highlight_color}')
+	
+	test_button.configure({"highlight_color" : (0,0,75)})
+	
+	print(f'en RE - configuracion: {test_button.highlight_color}')
+	
+	"""
+	En conclusion solo permite un solo cambio
+	"""
 	
 	while 1:
 		

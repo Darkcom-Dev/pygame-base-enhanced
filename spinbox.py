@@ -37,20 +37,24 @@ class SpinBox:
 	"""
 
 		
-	def __init__ (self, color, kmenu, rect, value = 0, step = 1 , min_val = None, max_val = None, **kwargs):
+	def __init__ (self, color, rect, value = 0, step = 1 , min_val = None, max_val = None, **kwargs):
 		""" 
 		SpinBox constructor.
 		
 		args:
 		---
 		color : tuple # RGB values
-		kmenu : dict 	# Dictionary of spin box items ???
+		
 		rect : pygame.Rect # Used for calculate 2 arrow buttons and rect.
+		value : int, float or list # default initial value.
+		step : float or int # works like a default index if value is a dict.
+		min_val : int # Minimum value to limit the decrement, if value is a list default value is 0.
+		max_val : int # Maximum value to limit the increment, if value is a list default value is the maximum item count in list.
+		kwargs : dict # Optional values.
 		
 		return : None
 		"""
 		self.color = color
-		self.kmenu = kmenu
 		self.rect = rect
 		
 		self.kwargs = kwargs
@@ -68,8 +72,8 @@ class SpinBox:
 			self.min_val = 0
 			self.max_val = len(self.value) -1
 		
-		self.left = btn.Button((self.rect[0],self.rect[1],self.rect[2] * 0.2,self.rect[3]),'◀', self.decrease_value)
-		self.right = btn.Button((self.rect[0] + self.rect[2] * 0.8, self.rect[1], self.rect[2] * 0.2, self.rect[3]),'▶', self.increase_value)
+		self.left = btn.Button((self.rect[0],self.rect[1],32 ,self.rect[3]),'◀', self.decrease_value)
+		self.right = btn.Button((self.rect[0] + self.rect[2] -32, self.rect[1], 32, self.rect[3]),'▶', self.increase_value)
 		
 		self.font = pg.font.SysFont('Arial',20)
 		
@@ -83,14 +87,19 @@ class SpinBox:
 		
 		return : None
 		"""
-		self.box = pg.draw.rect(screen, (0,0,0),(self.rect[0] + self.rect[2] * 0.2, self.rect[1], self.rect[2] * 0.6, self.rect[3]), 0, 5)
+		self.box = pg.draw.rect(screen, self.color,(self.rect[0] + 32, self.rect[1], self.rect[2] -64, self.rect[3]), 0, 5)
 		self.left.draw(screen)
 		self.right.draw(screen)
 		
 		
 		align_x = self.rect[0]
 		align_y = self.rect[1]
-		fnt_render = self.font.render(str(round(self.value, 2)),True,(64,64,64),(0,0,0))
+		fnt_content =''
+		if isinstance(self.value, int) or isinstance(self.value, float):
+			fnt_content = str(round(self.value, 2))
+		elif isinstance(self.value, list):
+			fnt_content = self.value[self.step]
+		fnt_render = self.font.render(fnt_content,True,(64,64,64))
 		align_x += self.rect[2] // 2 - fnt_render.get_width() // 2
 		align_y += self.rect[3] // 2 - fnt_render.get_height() // 2
 		
@@ -151,17 +160,22 @@ def main(args):
 	pg.display.set_caption('Spin Box Class')
 	
 	_color = (255,0,0)
-	_rect = (100,100,200,64)
+	_rect = (100,100,300,32)
+	values = ['800x600', '1024x768', '1366x768', '1280x720']
+	spinbox = SpinBox(_color, _rect, values, 0)
 	
-	values = ['Option 1','Option 2', 'Option 3','Option 4']
+	_color2 = (0,255,0)
+	_rect2 = (100,164,300,32)
+	values2 = ['Easy', 'Normal', 'Hard', 'Insane']
+	spinbox2 = SpinBox(_color2, _rect2, values2, 1)
 	
-	spinbox = SpinBox(_color,{1,2,3,4},_rect, 0.125, 0.125)
 	while 1:
 		for event in pg.event.get():
 			if event.type == pg.QUIT:
 				sys.exit()
 		root.fill((35,35,70))
 		spinbox.draw(root)
+		spinbox2.draw(root)
 		pg.display.update()
 	
 	return 0
