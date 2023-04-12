@@ -1,31 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  entry.py
-#  
-#  Copyright 2022 Braulio Madrid <darkcom@darkcom-X455LD>
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#  
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#  
-#  
-
-import pygame as pg
-
-class Entry:
-	""" 
+""" 
 	Create a functional Entry Widget with pygame module
 	Require import pygame
 	
@@ -35,16 +11,54 @@ class Entry:
 	- self.text is real text to get data and self.show_text will be text to show in screen, necesary for passwords
 	
 	- Create a style set for widgets
+"""
+
+"""
+Este código define una clase llamada "Entry" que representa una caja de entrada de texto. 
+Utiliza el módulo Pygame para dibujar la caja en la pantalla y para procesar las entradas de teclado.
+
+El método init define los atributos iniciales de la caja de entrada de texto, 
+como su posición y tamaño (rect), el color de fondo (color), la longitud máxima del texto (limit), 
+y el carácter de relleno a usar en caso de estar en modo de contraseña (password).
+
+El método draw dibuja la caja de entrada de texto en la pantalla, 
+y renderiza el texto que ha sido ingresado hasta el momento en la caja.
+
+El método input se encarga de procesar las entradas de teclado. 
+Si la tecla presionada es la tecla "borrar", elimina el último carácter del texto. 
+De lo contrario, busca la tecla presionada en el diccionario key_mappings y 
+agrega el carácter correspondiente al texto.
+
+En resumen, esta clase proporciona una forma sencilla de agregar una caja de entrada de 
+texto a una aplicación de Pygame y procesar las entradas de teclado.
+"""
+
+import pygame as pg
+
+class Entry:
 	"""
-	
-	def __init__ (self, rect, color, limit = 40, password = ''):
-		""" 
-		Class initialiser 
-		
-		rect : rect for input field siaze
-		color : color text and frame
-		limit : maxium char size
-		password : char for hide password
+	A class to create an input box with Pygame.
+
+	Attributes:
+		rect (pg.Rect): Rectangle object that defines the position and dimensions of the input box.
+		color (pg.Color): Pygame Color object that defines the color of the input box.
+		limit (int): An integer that defines the maximum length of the input box. Default is 40.
+		password (str): A string to set a password character to mask the input. Default is empty.
+
+	Methods:
+		draw(screen): Draws the input box on the screen.
+		input(key): Receives a key press and adds it to the input text or deletes the last character.
+	"""
+
+	def __init__ (self, rect: pg.Rect, color: pg.Color, limit: int = 40, password:str = ''):
+		"""
+		Initializes the Entry object.
+
+		Args:
+			rect (pg.Rect): Rectangle object that defines the position and dimensions of the input box.
+			color (pg.Color): Pygame Color object that defines the color of the input box.
+			limit (int, optional): An integer that defines the maximum length of the input box. Default is 40.
+			password (str, optional): A string to set a password character to mask the input. Default is empty.
 		"""
 		self.rect = rect
 		self.color = color
@@ -55,115 +69,88 @@ class Entry:
 		self.font_size = 20 # Size of char
 		self.max_limit = self.rect[2] // (12) # 12 is fixed char_size, find other formula
 		
+		# Creates a font object for rendering the text.
 		self.font = pg.font.SysFont('Arial',self.font_size)
-		
-		
-	def draw (self, screen):
-		""" 
-		Draw function.
-		---
-		parameters:
-		screen : pg.Surface
+			
+	def draw (self, screen: pg.Surface):
+		"""
+		Draws the input box on the screen.
+
+		Args:
+			screen (pg.Surface): Pygame surface object that represents the window to draw on.
 		"""
 		pg.draw.rect(screen, self.color, self.rect, 1)
 		
-		show_text = ''
-		
-		if self.password == '':
-			if self.font.size(self.text)[0] <= self.rect[2]:
-				show_text = self.text[0:self.limit]
-			else:
-				show_text = self.text[0:self.max_limit]
-		else:
-			if self.font.size(self.text)[0] <= self.rect[2]:
-				show_text = len(self.text[0:self.limit]) * self.password
-			else:
-				show_text = len(self.text[0:self.max_limit]) * self.password
-			
-		
-		fnt_render = self.font.render(show_text, True, self.color)
-		
-		
-		
-		screen.blit(fnt_render,(self.rect[0] + 3, self.rect[1] + 3, self.rect[2] - 10, self.rect[3] - 10))
+		# Limits the text length to the maximum length or the box size, whichever is smaller.
+		text_to_render = self.text[0:self.limit] if self.font.size(self.text)[0] <= self.rect[2] else self.text[0:self.max_limit]
+
+		# If the password attribute is set, replaces the input text with the password character.
+		if self.password:
+			text_to_render = len(text_to_render) * self.password
+		# Renders the text and blits it on the screen.
+		rendered_text = self.font.render(text_to_render, True, self.color)
+		screen.blit(rendered_text,(self.rect[0] + 3, self.rect[1] + 3, self.rect[2] - 10, self.rect[3] - 10))
 		
 	def input (self, key):
-		""" 
-		Get integer from key events and convert to char
-		parameters:
-		key : int -> get data from key events
-		
 		"""
-		print(key)
-		
+		Receives a key press and adds it to the input text or deletes the last character.
+
+		Args:
+			key (int): An integer representing the key pressed.
+		"""		
 		self.max_limit = self.rect[2] // (12)
 		
-		if key == 97:		self.text += 'A'
-		elif key == 98:		self.text += 'B'
-		elif key == 99:		self.text += 'C'
-		elif key == 100:	self.text += 'D'
-		elif key == 101:	self.text += 'E'
-		elif key == 102:	self.text += 'F'
-		elif key == 103:	self.text += 'G'
-		elif key == 104:	self.text += 'H'
-		elif key == 105:	self.text += 'I'
-		elif key == 106:	self.text += 'J'
-		elif key == 107:	self.text += 'K'
-		elif key == 108:	self.text += 'L'
-		elif key == 109:	self.text += 'M'
-		elif key == 110:	self.text += 'N'
-		elif key == 111:	self.text += 'O'
-		elif key == 112:	self.text += 'P'
-		elif key == 113:	self.text += 'Q'
-		elif key == 114:	self.text += 'R'
-		elif key == 115:	self.text += 'S'
-		elif key == 116:	self.text += 'T'
-		elif key == 117:	self.text += 'U'
-		elif key == 118:	self.text += 'V'
-		elif key == 119:	self.text += 'W'
-		elif key == 120:	self.text += 'X'
-		elif key == 121:	self.text += 'Y'
-		elif key == 122:	self.text += 'Z'
-		elif key == 32:		self.text += ' '
-		elif key == 48:		self.text += '0'
-		elif key == 49:		self.text += '1'
-		elif key == 50:		self.text += '2'
-		elif key == 51:		self.text += '3'
-		elif key == 52:		self.text += '4'
-		elif key == 53:		self.text += '5'
-		elif key == 54:		self.text += '6'
-		elif key == 55:		self.text += '7'
-		elif key == 56:		self.text += '8'
-		elif key == 57:		self.text += '9'
-		elif key == 8:		self.text = self.text[0:-1]
-		elif key == 13:		self.text += '\n'
-
+		# Dictionary that maps keys to characters.
+		key_mappings = {
+			97: 'A', 98: 'B', 99: 'C', 100: 'D', 101: 'E',
+			102: 'F', 103: 'G', 104: 'H', 105: 'I',	106: 'J',
+			107: 'K', 108: 'L',	109: 'M', 110: 'N',	111: 'O',
+			112: 'P', 113: 'Q',	114: 'R', 115: 'S',	116: 'T',
+			117: 'U', 118: 'V',	119: 'W', 120: 'X',	121: 'Y',
+			122: 'Z', 32: ' ',	48: '0', 49: '1', 50: '2',
+			51: '3', 52: '4', 53: '5', 54: '6', 55: '7',
+			56: '8', 57: '9', 8: '', 13: '\n'
+		}
+		
+		if key == 8:
+			self.text = self.text[0:-1]
+		elif key in key_mappings:
+			self.text += key_mappings[key]
 
 def main(args):
-	
+	# Inicializar pygame
 	pg.init()
+
+	# Crear una pantalla
 	display = pg.display.set_mode((600, 400))
-	
 	pg.display.set_caption('Entry test class')
 	
+	# Crear una caja de entrada
 	_rect = pg.Rect(200,200,200,50)
-	test_entry = Entry(_rect, (255,0,0),20,'*')
+	test_entry = Entry(_rect, (255,0,0),20,password='\n')
 	
-	while 1:
-		
+	# Bucle principal
+	while True:
+		# Dibujar el objeto Entry en la pantalla
 		display.fill((13,17,23))
 		test_entry.draw(display)
 		
+		# Manejar eventos
 		for event in pg.event.get():
 			if event.type == pg.QUIT:
+				# Terminar la aplicación
 				sys.exit()
 			if event.type == pg.KEYDOWN:
+				# Manejar la entrada de texto del usuario / Entrada de teclado
 				test_entry.input(event.key)
-				
+
+		# Actualizar la pantalla		
 		pg.display.update()
 	
+	# Finalizar la aplicación
 	return 0
 
 if __name__ == '__main__':
 	import sys
+	# Ejecuta la funcion main() y salir con el codigo de exito.
 	sys.exit(main(sys.argv))

@@ -24,6 +24,7 @@
 # ------------------------------------------------------------ Imports
 import pygame as pg
 import button as btn
+
 # ------------------------------------------------------------ Classes
 class CheckBox:
 	""" 
@@ -50,8 +51,7 @@ class CheckBox:
 		self.text = text # Label is better varible name
 		self.state = state
 		self.temp_check = not self.state
-		self.font = pg.font.SysFont('Arial',20)
-		
+				
 		self.check = btn.Button(self.rect, self.text, self.change_state)
 		
 	def draw (self, screen):

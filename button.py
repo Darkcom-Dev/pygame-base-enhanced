@@ -9,6 +9,7 @@
 # ------------------------------------------------------------ Imports
 import sys
 import pygame as pg
+import config as cfg
 
 # ------------------------------------------------------------ Classes
 class Button():
@@ -45,14 +46,6 @@ class Button():
 		self.align = 'center'
 		self.valign = 'mid'
 		
-		# normal_color, enabled and out of bounds
-		self.normal_color = (170,170,170)
-		# highlight_color, enabled and in range of bounds
-		self.highlight_color = (100,100,100)
-		# clicked color, enabled, in range of bounds and clicked
-		self.clicked_color = (170,170,170)
-		# disabled color, disabled
-		self.disabled_color = (75,75,75)
 
 		# On Click Function
 		self.onclickFunction = onclickFunction
@@ -69,7 +62,7 @@ class Button():
 		
 		# text content for button label
 		self.text = text
-		self.font = pg.font.SysFont('Arial',20)
+		self.font = pg.font.SysFont(cfg.font_family, cfg.font_size)
 		
 		
 	def draw(self, screen):
@@ -85,7 +78,7 @@ class Button():
 		None
 		"""
 		
-		fnt_render = self.font.render(self.text,True,self.disabled_color)
+		fnt_render = self.font.render(self.text, True, cfg.font_disabled_color)
 		
 		if self.enabled:
 			self.pos = pg.mouse.get_pos()
@@ -97,8 +90,8 @@ class Button():
 			
 			if self.mouse == (1,0,0): # Clicked
 				if self.in_rect:
-					pg.draw.rect(screen,self.clicked_color,self.rect,3,10)
-					fnt_render = self.font.render(self.text,True,self.clicked_color)
+					pg.draw.rect(screen, cfg.border_clicked_color,self.rect, cfg.border_width, cfg.border_radius, cfg.border_top_left_radius, cfg.border_top_right_radius, cfg.border_bottom_left_radius, cfg.border_bottom_right_radius)
+					fnt_render = self.font.render(self.text, True, cfg.font_clicked_color)
 					if self._event['clicked'] == False:
 						
 						if self.onclickFunction != None: self.onclickFunction()
@@ -108,16 +101,16 @@ class Button():
 				
 				self._event['clicked'] = False
 				if self.in_rect:
-					pg.draw.rect(screen,self.highlight_color,self.rect,3,10)
-					fnt_render = self.font.render(self.text,True,self.highlight_color)
+					pg.draw.rect(screen, cfg.border_highlight_color,self.rect, cfg.border_width, cfg.border_radius, cfg.border_top_left_radius, cfg.border_top_right_radius, cfg.border_bottom_left_radius, cfg.border_bottom_right_radius)
+					fnt_render = self.font.render(self.text,True, cfg.font_highlight_color)
 					self._event['highlighted'] = True
 				else:
-					pg.draw.rect(screen,self.normal_color,self.rect,3,10)
-					fnt_render = self.font.render(self.text,True,self.normal_color)
+					pg.draw.rect(screen,cfg.border_normal_color,self.rect, cfg.border_width, cfg.border_radius, cfg.border_top_left_radius, cfg.border_top_right_radius, cfg.border_bottom_left_radius, cfg.border_bottom_right_radius)
+					fnt_render = self.font.render(self.text,True, cfg.font_normal_color)
 					self._event['highlighted'] = False
 		else:
-			pg.draw.rect(screen,self.disabled_color,self.rect,3,10)
-			fnt_render = self.font.render(self.text,True,self.disabled_color)
+			pg.draw.rect(screen,cfg.border_disabled_color,self.rect, cfg.border_width, cfg.border_radius, cfg.border_top_left_radius, cfg.border_top_right_radius, cfg.border_bottom_left_radius, cfg.border_bottom_right_radius)
+			fnt_render = self.font.render(self.text,True, cfg.border_disabled_color)
 		
 		# Dibuja la fuente en pantalla
 		# Alinear texto en rectangulo
@@ -194,8 +187,8 @@ def main ():
 	# Changing color directly
 	test_button.normal_color = (125, 0, 0)
 	# Changing style from configure function - NOT FUNCTIONAL
+	# ~ test_button.enabled = False
 	
-	print(f'previo: {test_button.highlight_color}')
 	
 	new_config = {	"highlight_color" : (0, 75 , 0), 
 					"clicked_color" : (0, 75,75), 
@@ -203,15 +196,11 @@ def main ():
 					"align" : "right", 
 					"valign" : "bottom"}
 	test_button.configure(new_config)
-	
-	print(f'en configuracion: {test_button.highlight_color}')
-	
 	test_button.configure({"highlight_color" : (0,0,75)})
 	
-	print(f'en RE - configuracion: {test_button.highlight_color}')
 	
 	"""
-	En conclusion solo permite un solo cambio
+	En conclusion permite un solo cambio
 	"""
 	
 	while 1:

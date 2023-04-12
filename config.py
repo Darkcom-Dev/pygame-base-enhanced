@@ -75,6 +75,40 @@ BgmVolume = config.getfloat('Audio', 'BgmVolume')
 Background = config.get('Sprites','Background')
 ControllerBackground = config.get('Sprites', 'ControllerBackground')
 
+# UI
+
+# font
+font_family = config.get('UI', 'font_family')
+font_size = config.getint('UI', 'font_size')
+
+font_normal_color = [int(s) for s in config.get("UI","font_normal_color").split(',')]
+font_highlight_color = [int(s) for s in config.get("UI","font_highlight_color").split(',')]
+font_clicked_color = [int(s) for s in config.get("UI","font_clicked_color").split(',')]
+font_disabled_color = [int(s) for s in config.get("UI","font_disabled_color").split(',')]
+
+# border
+border_radius = config.getint('UI', 'border_radius')
+border_width = config.getint('UI', 'border_width')
+border_top_left_radius = config.getint('UI', 'border_top_left_radius')
+border_top_right_radius = config.getint('UI','border_top_right_radius')
+border_bottom_left_radius = config.getint('UI', 'border_bottom_left_radius')
+border_bottom_right_radius = config.getint('UI', 'border_bottom_right_radius')
+
+border_normal_color = [int(s) for s in config.get("UI","border_normal_color").split(',')]
+border_highlight_color = [int(s) for s in config.get("UI","border_highlight_color").split(',')]
+border_clicked_color = [int(s) for s in config.get("UI","border_clicked_color").split(',')]
+border_disabled_color = [int(s) for s in config.get("UI","border_disabled_color").split(',')]
+
+frame_radius = config.getint('UI', 'frame_radius')
+frame_width = config.getint('UI', 'frame_width')
+
+frame_top_left_radius = config.getint('UI', 'frame_top_left_radius')
+frame_top_right_radius = config.getint('UI', 'frame_top_right_radius')
+frame_bottom_left_radius = config.getint('UI', 'frame_bottom_left_radius')
+frame_bottom_right_radius = config.getint('UI', 'frame_bottom_right_radius')
+
+frame_normal_color = [int(s) for s in config.get("UI","frame_normal_color").split(',')]
+
 def set_volume(volume):
 	with open('config.cfg','w') as cfg:
 		#if volume != BgmVolume:

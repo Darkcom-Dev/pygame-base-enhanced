@@ -23,7 +23,7 @@
 #  --------------------------------------------------------- Imports
 import button as btn
 import pygame as pg
-
+import config as cfg
 # ---------------------------------------------------------- Classes
 class Menu:
 	"""
@@ -34,7 +34,7 @@ class Menu:
 	- make that configure works
 	"""
 	
-	def __init__ (self, color, kmenu, rect, orientation = 'horizontal', padx = 0, pady = 0, **kwargs):
+	def __init__ (self, kmenu, rect, orientation = 'horizontal', padx = 0, pady = 0, **kwargs):
 		""" 
 		Constructor of Menu object.
 		
@@ -48,7 +48,7 @@ class Menu:
 		kwargs : dict	# optional visual values generally.
 		"""
 		# color for extern frame rect.
-		self._color = color
+		
 		# dictionary menu with label and function or method name.
 		self._kmenu = kmenu
 
@@ -114,7 +114,7 @@ class Menu:
 		None
 		"""
 		
-		pg.draw.rect(screen, self._color, self.rect, 2, 10,2)
+		pg.draw.rect(screen, cfg.frame_normal_color, self.rect, cfg.frame_width, cfg.frame_radius, cfg.frame_top_left_radius, cfg.frame_top_right_radius, cfg.frame_bottom_left_radius, cfg.frame_bottom_right_radius)
 		
 		for button in self._buttons:
 			button.draw(screen)
@@ -149,13 +149,13 @@ def main(args):
 	menu = {'Nueva campaña': new_campaign, 'Cargar' : load_func, 'Opciones': options_func, 'Créditos': credits_function}
 	
 	menu_rect = pg.Rect(10,76,200,314)
-	menu_ui = Menu((128,64,32), menu, menu_rect, 'vertical', 10,5)
+	menu_ui = Menu(menu, menu_rect, 'vertical', 10,5)
 	
 	config = {'orientation':'horizontal'}
 	menu_ui.configure(config)
 	
 	menu2_rect = pg.Rect(10,10,580,56)
-	menu2_ui = Menu((128,64,32), menu, menu2_rect, 'horizontal', 5,10)
+	menu2_ui = Menu(menu, menu2_rect, 'horizontal', 5,10)
 	
 	while 1:
 		for event in pg.event.get():
