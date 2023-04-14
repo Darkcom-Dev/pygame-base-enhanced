@@ -1,25 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  spinbox.py
-#  
-#  Copyright 2022 Braulio Madrid <darkcom@darkcom-X455LD>
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#  
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#  
+  
 #  
 # ------------------------------------------------------------ Imports
 import pygame as pg
@@ -37,7 +19,7 @@ class SpinBox:
 	"""
 
 		
-	def __init__ (self, color, rect, value = 0, step = 1 , min_val = None, max_val = None, **kwargs):
+	def __init__ (self, color:pg.Color, rect:pg.Rect, value:int = 0, step:int = 1 , min_val = None, max_val = None, **kwargs):
 		""" 
 		SpinBox constructor.
 		
@@ -77,13 +59,13 @@ class SpinBox:
 		
 		self.font = pg.font.SysFont('Arial',20)
 		
-	def draw (self, screen):
+	def draw (self, screen:pg.Surface):
 		""" 
 		Draw in screen the spinbox widget.
 		
 		args:
 		---
-		screen : pygame.Surface # Empty canvas for draw widget.
+		param screen : Empty canvas for draw widget.
 		
 		return : None
 		"""

@@ -6,11 +6,8 @@
 	Require import pygame
 	
 	TODO:
-	- Limitate text string length or auto limitate with rect width
-	- Hide text with asterisk or other character, neccesary for passwords
+	- Accurate text string length or auto limitate with rect width
 	- self.text is real text to get data and self.show_text will be text to show in screen, necesary for passwords
-	
-	- Create a style set for widgets
 """
 
 """
@@ -19,7 +16,7 @@ Utiliza el módulo Pygame para dibujar la caja en la pantalla y para procesar la
 
 El método init define los atributos iniciales de la caja de entrada de texto, 
 como su posición y tamaño (rect), el color de fondo (color), la longitud máxima del texto (limit), 
-y el carácter de relleno a usar en caso de estar en modo de contraseña (password).
+y el carácter de relleno a usar en caso de estar en modo de contraseña (mask).
 
 El método draw dibuja la caja de entrada de texto en la pantalla, 
 y renderiza el texto que ha sido ingresado hasta el momento en la caja.
@@ -49,8 +46,18 @@ class Entry:
 		draw(screen): Draws the input box on the screen.
 		input(key): Receives a key press and adds it to the input text or deletes the last character.
 	"""
+	style = {
+        'font': 'System',
+        'font_size': 20,
+		'font_align': 'left',
+		'font_valign': 'top',
+        'text_color': (0, 0, 0),
+        'bg_color': (255, 255, 255),
+		'stroke': 0,
+		'border_radius': 0
+    }
 
-	def __init__ (self, rect: pg.Rect, color: pg.Color, limit: int = 40, password:str = ''):
+	def __init__ (self, rect: pg.Rect, limit: int = 40, mask:str = '', align = 'left', valign = 'top', style=None):
 		"""
 		Initializes the Entry object.
 
@@ -58,19 +65,19 @@ class Entry:
 			rect (pg.Rect): Rectangle object that defines the position and dimensions of the input box.
 			color (pg.Color): Pygame Color object that defines the color of the input box.
 			limit (int, optional): An integer that defines the maximum length of the input box. Default is 40.
-			password (str, optional): A string to set a password character to mask the input. Default is empty.
+			mask (str, optional): A string to set a password character to mask the input. Default is empty.
 		"""
 		self.rect = rect
-		self.color = color
 		self.text = ''
 		
 		self.limit = limit
-		self.password = password # Fillchar
-		self.font_size = 20 # Size of char
-		self.max_limit = self.rect[2] // (12) # 12 is fixed char_size, find other formula
+		self.max_limit = 10
+		self.mask = mask # Fillchar
+		# Estilos
+		self.style = style or Entry.style
 		
 		# Creates a font object for rendering the text.
-		self.font = pg.font.SysFont('Arial',self.font_size)
+		self.font = pg.font.SysFont(self.style.get('font', Entry.style['font']),self.style.get('font_size', Entry.style['font_size']))
 			
 	def draw (self, screen: pg.Surface):
 		"""
@@ -79,18 +86,43 @@ class Entry:
 		Args:
 			screen (pg.Surface): Pygame surface object that represents the window to draw on.
 		"""
-		pg.draw.rect(screen, self.color, self.rect, 1)
+		text_color = self.style.get('text_color', Entry.style['text_color'])
+		bg_color = self.style.get('bg_color', Entry.style['bg_color'])
+		stroke = self.style.get('stroke', Entry.style['stroke'])
+		border_radius = self.style.get('border_radius', Entry.style['border_radius'])
+		pg.draw.rect(screen, bg_color, self.rect, stroke, border_radius)
 		
 		# Limits the text length to the maximum length or the box size, whichever is smaller.
-		text_to_render = self.text[0:self.limit] if self.font.size(self.text)[0] <= self.rect[2] else self.text[0:self.max_limit]
+		text_to_render = self.text[0:self.limit] if self.font.size(self.text)[0] < self.rect[2] else self.text[0:self.max_limit]
 
-		# If the password attribute is set, replaces the input text with the password character.
-		if self.password:
-			text_to_render = len(text_to_render) * self.password
+		# If the mask attribute is set, replaces the input text with the password character.
+		if self.mask:
+			text_to_render = len(text_to_render) * self.mask
 		# Renders the text and blits it on the screen.
-		rendered_text = self.font.render(text_to_render, True, self.color)
-		screen.blit(rendered_text,(self.rect[0] + 3, self.rect[1] + 3, self.rect[2] - 10, self.rect[3] - 10))
+		rendered_text = self.font.render(text_to_render, True, text_color)
+
+		aligns = {
+			'left': self.rect[0] + border_radius,
+			'center': self.rect[0] + self.rect[2]//2 - rendered_text.get_width()//2,
+			'right': self.rect[0] + self.rect[2] - border_radius - rendered_text.get_width()
+		}
 		
+		valigns = {
+			'top': self.rect[1] + border_radius,
+			'middle': self.rect[1] + self.rect[3]//2 - rendered_text.get_height()//2,
+			'bottom': self.rect[1] + self.rect[3] - border_radius - rendered_text.get_height()
+		}
+
+		x = aligns[self.style.get('font_align', Entry.style['font_align'])]
+		y = valigns[self.style.get('font_valign', Entry.style['font_valign'])]
+		w = self.rect[2] - border_radius
+		h = rendered_text.get_height() if rendered_text.get_height() < self.rect[3] else self.rect[3]
+		screen.blit(rendered_text,(x, y, w, h))
+		
+		# print(f'rect_X: {self.rect[2]} font size: {self.font.size(text_to_render)} max_limit: {self.max_limit} text_to_render: {len(text_to_render)}')
+		# La formula no es perfecta.
+		self.max_limit = len(self.text) if self.font.size(self.text)[0] + border_radius*2 < self.rect[2] else self.rect[2]//self.font.size(self.text)[1]
+
 	def input (self, key):
 		"""
 		Receives a key press and adds it to the input text or deletes the last character.
@@ -98,7 +130,7 @@ class Entry:
 		Args:
 			key (int): An integer representing the key pressed.
 		"""		
-		self.max_limit = self.rect[2] // (12)
+		
 		
 		# Dictionary that maps keys to characters.
 		key_mappings = {
@@ -114,8 +146,9 @@ class Entry:
 		
 		if key == 8:
 			self.text = self.text[0:-1]
-		elif key in key_mappings:
+		elif key in key_mappings and (self.max_limit < self.rect[2] or self.limit <= len(self.text)):
 			self.text += key_mappings[key]
+			
 
 def main(args):
 	# Inicializar pygame
@@ -126,8 +159,18 @@ def main(args):
 	pg.display.set_caption('Entry test class')
 	
 	# Crear una caja de entrada
-	_rect = pg.Rect(200,200,200,50)
-	test_entry = Entry(_rect, (255,0,0),20,password='\n')
+	_rect = pg.Rect(100,100,200,40)
+	_style = {
+		'font': 'G15',
+		'font_size': 20,
+		'text_color': '#FFFF00',
+		'bg_color': 'blue',
+		'stroke': 0,
+		'border_radius': 10,
+		'font_valign': 'middle',
+		'font_align': 'center'
+	}
+	test_entry = Entry(_rect,mask='*', style=_style, align='right')
 	
 	# Bucle principal
 	while True:
