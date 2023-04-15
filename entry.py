@@ -31,8 +31,9 @@ texto a una aplicación de Pygame y procesar las entradas de teclado.
 """
 
 import pygame as pg
+import widget
 
-class Entry:
+class Entry(widget.Widget):
 	"""
 	A class to create an input box with Pygame.
 
@@ -117,7 +118,8 @@ class Entry:
 		y = valigns[self.style.get('font_valign', Entry.style['font_valign'])]
 		w = self.rect[2] - border_radius
 		h = rendered_text.get_height() if rendered_text.get_height() < self.rect[3] else self.rect[3]
-		screen.blit(rendered_text,(x, y, w, h))
+		# screen.blit(rendered_text,(x, y, w, h))
+		screen.blit(rendered_text,widget.Widget.align(self.rect,rendered_text,'right','bottom',border_radius))
 		
 		# print(f'rect_X: {self.rect[2]} font size: {self.font.size(text_to_render)} max_limit: {self.max_limit} text_to_render: {len(text_to_render)}')
 		# La formula no es perfecta.
@@ -159,7 +161,7 @@ def main(args):
 	pg.display.set_caption('Entry test class')
 	
 	# Crear una caja de entrada
-	_rect = pg.Rect(100,100,200,40)
+	_rect = pg.Rect(100,100,200,140)
 	_style = {
 		'font': 'G15',
 		'font_size': 20,
