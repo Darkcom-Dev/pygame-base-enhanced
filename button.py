@@ -13,11 +13,8 @@ import widget
 
 # ------------------------------------------------------------ Classes
 
-
 """
-	TODO:
-	- Separate color rect out of color font.
-	- Separate colors generate very amount of arguments, considere use a style dict.
+	TODO:	
 	- Integrate effects from outline, shadow and chromatic classes.
 	- Make that configure method apply changes.
 	
@@ -87,75 +84,75 @@ class Button(widget.Widget):
 		self.font = pg.font.SysFont(font, font_size)
 		
 	
-	def handle_event(self, event):
+	def handle_events(self):
 		"""
-		Handle event for button
-		TODO: separate event logic from draw logic
-		### Args:
-		`event` : pygame.event
-		
+		Handle button events.	
 		### Return:
 		None
 		"""
-		pass
+		if not self.enabled:    return	
+		
+		self.pos = pg.mouse.get_pos()
+		self.mouse = pg.mouse.get_pressed()
+		self.in_rect = self.rect.collidepoint(self.pos)	
+		if self.mouse == (1, 0, 0):
+			if self.in_rect:
+				if not self._event['clicked'] and self.onclickFunction is not None:	self.onclickFunction()
+			self._event['clicked'] = self.in_rect
+		    
+		# Highlight
+		else:
+			self._event['highlighted'] = self.in_rect
+			self._event['clicked'] = False
+		    
 
+	    
 	def draw(self, surface):
 		"""
-		Draw a rect frame and text label for button
-		
-		### Args:
-		`surface` : pygame.Surface
-		
-		### Return:
-		None
-		"""
+	    Draw a rect frame and text label for button.
+
+	    ### Args:
+	    `surface` : pygame.Surface
+
+	    ### Return:
+	    None
+	    """
 		# Simplification of style variables
 		style_vars = ['text_color', 'font_clicked_color', 'font_disabled_color', 'font_highlight_color', 'bg_color',
-              'bg_clicked_color', 'bg_disabled_color', 'bg_highlight_color', 'border_radius', 'top_left_radius',
-              'top_right_radius', 'bottom_left_radius', 'bottom_right_radius', 'stroke']
-
-		style_values = {var: self.style.get(var, Button.style[var]) for var in style_vars}
+	                  'bg_clicked_color', 'bg_disabled_color', 'bg_highlight_color', 'border_radius', 'top_left_radius',
+	                  'top_right_radius', 'bottom_left_radius', 'bottom_right_radius', 'stroke']
 		
+		style_values = {var: self.style.get(var, Button.style[var]) for var in style_vars}
 		font_color, font_clicked_color, font_disabled_color, font_highlight_color, bg_color, bg_clicked_color, \
-		bg_disabled_color, bg_highlight_color, border_radius, top_left_radius, top_right_radius, bottom_left_radius, \
-		bottom_right_radius, stroke = [style_values[var] for var in style_vars]
+	    bg_disabled_color, bg_highlight_color, border_radius, top_left_radius, top_right_radius, bottom_left_radius, \
+	    bottom_right_radius, stroke = [style_values[var] for var in style_vars]
 
-		# Colors
+	    # Colors
 		event_color = font_disabled_color
 		bg_event_color = bg_disabled_color
-		
-		# Events
-		if self.enabled:
-			self.pos = pg.mouse.get_pos()
-			self.mouse = pg.mouse.get_pressed()
-			self.in_rect = self.rect.collidepoint(self.pos)
-						
-			if self.mouse == (1,0,0): # Clicked
-				if self.in_rect:
-					bg_event_color = bg_clicked_color
-					event_color = font_clicked_color
-					if self._event['clicked'] == False and self.onclickFunction != None: self.onclickFunction()
-					self._event['clicked'] = True
-					
-			else: # Highlight
-				self._event['clicked'] = False
-				self._event['highlighted'] = self.in_rect
-				bg_event_color = bg_highlight_color if self._event['highlighted'] else bg_color
-				event_color = font_highlight_color if self._event['highlighted'] else font_color
 
-		else:
-			bg_event_color = bg_disabled_color
-			event_color = font_disabled_color
-		
+	    # Events
+		self.handle_events()
+		if self.enabled:
+			if self._event['clicked']:
+				bg_event_color = bg_clicked_color
+				event_color = font_clicked_color
+			elif self._event['highlighted']:
+				bg_event_color = bg_highlight_color
+				event_color = font_highlight_color
+			else:
+				bg_event_color = bg_color
+				event_color = font_color
+				
 		pg.draw.rect(surface,bg_event_color,self.rect, stroke, border_radius, top_left_radius, top_right_radius, bottom_left_radius, bottom_right_radius)
 		font_render = self.font.render(self.text, True, event_color)
 
-		# Alinear texto en rectangulo
+	    # Alinear texto en rectangulo
 		align = self.style.get('font_align',Button.style['font_align'])
 		valign = self.style.get('font_valign',Button.style['font_valign'])
-		# Dibuja la fuente en pantalla
+	    # Dibuja la fuente en pantalla
 		surface.blit(font_render,widget.Widget.align(self.rect, font_render, align, valign, border_radius=border_radius))
-			
+
 	
 # -------------------------------------------------..... Program entry
 
