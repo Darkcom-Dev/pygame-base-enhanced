@@ -24,7 +24,7 @@ class Widget:
     require import pygame
     """		
     style = {
-        'font_family': 'System',
+        'font_family': 'G15',
         'font_size': 20,
 		'font_align': 'center',
 		'font_valign': 'middle',
@@ -44,6 +44,8 @@ class Widget:
 		'bottom_right_radius': -1,
         'check_char': '[x]',
 		'uncheck_char': '[ ]',
+        'increment_char': '->',
+		'decrement_char': '<-',
     }
     def __init__(self, rect, text = '', onclickFunction = None, style = None):
         """
@@ -72,12 +74,12 @@ class Widget:
         # Simplification of style variables
         style_vars = ['font_family','font_size','text_color', 'font_clicked_color', 'font_disabled_color', 'font_highlight_color', 'bg_color',
 	                  'bg_clicked_color', 'bg_disabled_color', 'bg_highlight_color', 'border_radius', 'top_left_radius',
-	                  'top_right_radius', 'bottom_left_radius', 'bottom_right_radius', 'stroke', 'check_char', 'uncheck_char']
+	                  'top_right_radius', 'bottom_left_radius', 'bottom_right_radius', 'stroke', 'check_char', 'uncheck_char','increment_char','decrement_char']
         
         style_values = {var: self.style.get(var, Widget.style[var]) for var in style_vars}
         self.font_family, self.font_size, self.font_color, self.font_clicked_color, self.font_disabled_color, self.font_highlight_color, self.bg_color, self.bg_clicked_color, \
 	    self.bg_disabled_color, self.bg_highlight_color, self.border_radius, self.top_left_radius, self.top_right_radius, self.bottom_left_radius, \
-	    self.bottom_right_radius, self.stroke, self.check_char, self.uncheck_char = [style_values[var] for var in style_vars]
+	    self.bottom_right_radius, self.stroke, self.check_char, self.uncheck_char, self.increment_char, self.decrement_char = [style_values[var] for var in style_vars]
         
     def handle_events(self):
         """

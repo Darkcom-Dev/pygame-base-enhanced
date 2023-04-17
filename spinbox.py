@@ -1,64 +1,41 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-  
-#  
 # ------------------------------------------------------------ Imports
 import pygame as pg
 import button as btn
+import widget
 # ------------------------------------------------------------ Classes
 
-class SpinBox:
+class SpinBox(widget.Widget):
 	""" 
 	Create Spin box widget. 
 	
 	TODO:
-
 	- enable the posibility to increment value based in list items.
 	- make that return the value.
+	- hacer que los estilos funcionen correctamente.
 	"""
-	style = {
-	        'font_family': 'System',
-	        'font_size': 20,
-			'increment_char': '->',
-			'decrement_char': '<-',
-			'font_align': 'center',
-			'font_valign': 'middle',
-	        'text_color': 'black',
-			'font_clicked_color' : 'blue',
-			'font_disabled_color': 'gray',
-			'font_highlight_color': 'white',
-	        'bg_color': 'white',
-			'bg_clicked_color': '#f5f5ff',
-			'bg_disabled_color': '#fff5cc',
-			'bg_highlight_color': 'gray',
-			'stroke': 0,
-			'border_radius': 0,
-			'top_left_radius': -1,
-			'top_right_radius': -1,
-			'bottom_left_radius': -1,
-			'bottom_right_radius': -1
-	    }
-		
+			
 	def __init__ (self, rect:pg.Rect, value:int = 0, range:range = None, style = None):
 		""" 
 		SpinBox constructor.
 		
-		args:
+		### args:
 		---
 		color : tuple # RGB values
 		
 		rect : pygame.Rect # Used for calculate 2 arrow buttons and rect.
 		value : int, float or list # default initial value.
 		step : float or int # works like a default index if value is a dict.
-		min_val : int # Minimum value to limit the decrement, if value is a list default value is 0.
-		max_val : int # Maximum value to limit the increment, if value is a list default value is the maximum item count in list.
+		range : range # works like a default index if value is a dict.
 		
-		
+		### returns
+
 		return : None
 		"""
-		self.style = style or SpinBox.style
-		self.rect = rect
+		super().__init__(rect,style)
+		# self.style = style or SpinBox.style
 		
 		if isinstance(value, int) or isinstance(value, float):
 			self.value = value
@@ -69,17 +46,14 @@ class SpinBox:
 			self.step = 1
 			self.min_val = 0
 			self.max_val = len(self.value) -1
-
-			
 		
 		left_rect = pg.Rect((self.rect[0],self.rect[1],32 ,self.rect[3]))
 		right_rect = pg.Rect((self.rect[0] + self.rect[2] -32, self.rect[1], 32, self.rect[3]))
-		increment_char = self.style.get('increment_char',SpinBox.style['increment_char'])
-		decrement_char = self.style.get('decrement_char',SpinBox.style['decrement_char'])
-		self.left = btn.Button(left_rect,decrement_char, self.decrease_value)
-		self.right = btn.Button(right_rect,increment_char, self.increase_value)
 		
-		self.font = pg.font.SysFont(self.style.get('font_family', SpinBox.style['font_family']),20)
+		self.left = btn.Button(left_rect,self.decrement_char, self.decrease_value)
+		self.right = btn.Button(right_rect,self.increment_char, self.increase_value)
+		
+		self.font = pg.font.SysFont(self.style['font_family'],20)
 		
 	def draw (self, surface:pg.Surface):
 		""" 
@@ -91,9 +65,8 @@ class SpinBox:
 		
 		return : None
 		"""
-		color = self.style.get('text_color',SpinBox.style['text_color'])
 		box_rect = pg.Rect((self.rect[0] + 32, self.rect[1], self.rect[2] -64, self.rect[3]))
-		self.box = pg.draw.rect(surface, color,box_rect, 0, 5)
+		self.box = pg.draw.rect(surface, self.font_color,box_rect, 0, 5)
 		self.left.draw(surface)
 		self.right.draw(surface)		
 		
@@ -111,10 +84,7 @@ class SpinBox:
 		align_y += self.rect[3] // 2 - font_render.get_height() // 2
 		
 		surface_rect = pg.Rect(align_x, align_y, self.rect[2] * 0.6, self.rect[3] * 0.6)
-		surface.blit(font_render,surface_rect)
-		
-	
-		
+		surface.blit(font_render,surface_rect)		
 	
 	def increase_value(self):
 		"""
@@ -158,25 +128,20 @@ def main(args):
 	
 	pg.display.set_caption('Spin Box Class')
 	
-	
-	_rect = pg.Rect(100,100,300,32)
 	_style = {
 		'increment_char': '>>',
 		'decrement_char': '<<',
 		'font_family': 'G15',
 		'font_size': 20
-
 	}
-	print(type(_rect))
+	_rect = pg.Rect(100,100,300,32)
 	values = ['800x600', '1024x768', '1366x768', '1280x720']
 	spinbox = SpinBox(_rect, values, style =_style)
-	
 	
 	_rect2 = pg.Rect(100,164,300,32)
 	values2 = ['Easy', 'Normal', 'Hard', 'Insane']
 	spinbox2 = SpinBox(_rect2, values2, style =_style)
 
-	
 	_rect3 = pg.Rect(100,228,300,32)
 	spinbox3 = SpinBox(_rect3, 1, range(1,100,3), style =_style)
 	
