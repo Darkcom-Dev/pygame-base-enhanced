@@ -7,7 +7,7 @@
 	
 	TODO:
 	- Accurate text string length or auto limitate with rect width
-	- self.text is real text to get data and self.show_text will be text to show in screen, necesary for passwords
+	- self.text is real text to get data and self.show_text will be text to show in surface, necesary for passwords
 """
 
 """
@@ -44,7 +44,7 @@ class Entry(widget.Widget):
 		password (str): A string to set a password character to mask the input. Default is empty.
 
 	Methods:
-		draw(screen): Draws the input box on the screen.
+		draw(surface): Draws the input box on the surface.
 		input(key): Receives a key press and adds it to the input text or deletes the last character.
 	"""
 	style = {
@@ -68,30 +68,26 @@ class Entry(widget.Widget):
 			limit (int, optional): An integer that defines the maximum length of the input box. Default is 40.
 			mask (str, optional): A string to set a password character to mask the input. Default is empty.
 		"""
-		self.rect = rect
-		self.text = ''
+
+		super().__init__(rect,style=style)
+		
 		
 		self.limit = limit
 		self.max_limit = 10
 		self.mask = mask # Fillchar
-		# Estilos
-		self.style = style or Entry.style
 		
 		# Creates a font object for rendering the text.
-		self.font = pg.font.SysFont(self.style.get('font', Entry.style['font']),self.style.get('font_size', Entry.style['font_size']))
+		self.font = pg.font.SysFont(self.style.get('font', self.style['font']),self.style.get('font_size', self.style['font_size']))
 			
-	def draw (self, screen: pg.Surface):
+	def draw (self, surface: pg.Surface):
 		"""
-		Draws the input box on the screen.
+		Draws the input box on the surface.
 
 		Args:
-			screen (pg.Surface): Pygame surface object that represents the window to draw on.
+			surface (pg.Surface): Pygame surface object that represents the window to draw on.
 		"""
-		text_color = self.style.get('text_color', Entry.style['text_color'])
-		bg_color = self.style.get('bg_color', Entry.style['bg_color'])
-		stroke = self.style.get('stroke', Entry.style['stroke'])
-		border_radius = self.style.get('border_radius', Entry.style['border_radius'])
-		pg.draw.rect(screen, bg_color, self.rect, stroke, border_radius)
+
+		pg.draw.rect(surface, self.style['bg_color'], self.rect, self.style['stroke'], self.style['border_radius'])
 		
 		# Limits the text length to the maximum length or the box size, whichever is smaller.
 		text_to_render = self.text[0:self.limit] if self.font.size(self.text)[0] < self.rect[2] else self.text[0:self.max_limit]
@@ -99,31 +95,14 @@ class Entry(widget.Widget):
 		# If the mask attribute is set, replaces the input text with the password character.
 		if self.mask:
 			text_to_render = len(text_to_render) * self.mask
-		# Renders the text and blits it on the screen.
-		rendered_text = self.font.render(text_to_render, True, text_color)
+		# Renders the text and blits it on the surface.
+		rendered_text = self.font.render(text_to_render, True, self.style['text_color'])
 
-		aligns = {
-			'left': self.rect[0] + border_radius,
-			'center': self.rect[0] + self.rect[2]//2 - rendered_text.get_width()//2,
-			'right': self.rect[0] + self.rect[2] - border_radius - rendered_text.get_width()
-		}
+		# surface.blit(rendered_text,(x, y, w, h))
+		surface.blit(rendered_text,self.align(self.rect,rendered_text,self.style['font_align'], self.style['font_valign'],self.style['border_radius']))
 		
-		valigns = {
-			'top': self.rect[1] + border_radius,
-			'middle': self.rect[1] + self.rect[3]//2 - rendered_text.get_height()//2,
-			'bottom': self.rect[1] + self.rect[3] - border_radius - rendered_text.get_height()
-		}
-
-		x = aligns[self.style.get('font_align', Entry.style['font_align'])]
-		y = valigns[self.style.get('font_valign', Entry.style['font_valign'])]
-		w = self.rect[2] - border_radius
-		h = rendered_text.get_height() if rendered_text.get_height() < self.rect[3] else self.rect[3]
-		# screen.blit(rendered_text,(x, y, w, h))
-		screen.blit(rendered_text,widget.Widget.align(self.rect,rendered_text,'right','bottom',border_radius))
-		
-		# print(f'rect_X: {self.rect[2]} font size: {self.font.size(text_to_render)} max_limit: {self.max_limit} text_to_render: {len(text_to_render)}')
 		# La formula no es perfecta.
-		self.max_limit = len(self.text) if self.font.size(self.text)[0] + border_radius*2 < self.rect[2] else self.rect[2]//self.font.size(self.text)[1]
+		self.max_limit = len(self.text) if self.font.size(self.text)[0] + self.style['border_radius']*2 < self.rect[2] else self.rect[2]//self.font.size(self.text)[1]
 
 	def input (self, key):
 		"""
@@ -172,7 +151,7 @@ def main(args):
 		'font_valign': 'middle',
 		'font_align': 'center'
 	}
-	test_entry = Entry(_rect,mask='*', style=_style, align='right')
+	test_entry = Entry(_rect,mask='', style=_style)
 	
 	# Bucle principal
 	while True:

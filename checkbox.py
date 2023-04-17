@@ -5,9 +5,10 @@
 # ------------------------------------------------------------ Imports
 import pygame as pg
 import button as btn
+import widget
 
 # ------------------------------------------------------------ Classes
-class CheckBox:
+class CheckBox(widget.Widget):
 	""" 
 	Create a Check box button.
 	require button module and pygame.
@@ -15,31 +16,7 @@ class CheckBox:
 	TODO:
 	- Make that return a boolean.
 	"""
-	style = {
-        'font': 'System',
-        'font_size': 20,
-		'font_align': 'center',
-		'font_valign': 'middle',
-        'text_color': 'black',
-		'check_char': '\u2714',
-		'uncheck_char': '\u2716',
-		'font_clicked_color' : 'blue',
-		'font_disabled_color': 'gray',
-		'font_highlight_color': 'white',
-        'bg_color': 'white',
-		'bg_clicked_color': '#f5f5ff',
-		'bg_disabled_color': '#fff5cc',
-		'bg_highlight_color': 'gray',
-		'stroke': 0,
-		'border_radius': 0,
-		'top_left_radius': -1,
-		'top_right_radius': -1,
-		'bottom_left_radius': -1,
-		'bottom_right_radius': -1
-
-    }
-	
-	
+		
 	def __init__ (self, rect, text = 'text', state = True, style = None):
 		""" 
 		Checkbox constructor
@@ -52,31 +29,30 @@ class CheckBox:
 		
 		return : None
 		"""
-		self.rect = rect
-		self.text = text # Label is better varible name
+
+		super().__init__(rect, text, style)
+	
 		self.state = state
 		self.temp_check = not self.state
-		self.style = style or CheckBox.style
-
+		
 		self.check = btn.Button(self.rect, self.text, self.change_state, self.style)
 		
-	def draw (self, screen):
+	def draw (self, surface):
 		""" 
 		Draw the button checkbox
 		args:
 		---
-		screen : pygame.Surface # Empty canvas to draw button.
+		surface : pygame.Surface # Empty canvas to draw button.
 		return : None
 		"""
 		
 		if self.state != self.temp_check:
-			check_char = self.style.get('check_char',CheckBox.style['check_char'])
-			uncheck_char = self.style.get('uncheck_char',CheckBox.style['uncheck_char'])
-			self.check.text = f'{check_char} ' if self.state == True else f'{uncheck_char} '
+						
+			self.check.text = f'{self.check_char} ' if self.state == True else f'{self.uncheck_char} '
 			self.check.text += self.text			
 			self.temp_check = self.state
 		
-		self.check.draw(screen)
+		self.check.draw(surface)
 		
 	def change_state(self):
 		"""
@@ -87,6 +63,8 @@ class CheckBox:
 		
 		
 # ---------------------------------------------------- Program Entry
+
+
 def main(args):
 	"""
 	Entry of program to test CheckBox class
@@ -101,7 +79,7 @@ def main(args):
 		"font_clicked_color" : (0, 75,75), 
 		"font_disabled_color" : (0, 0, 75), 
 		"bg_disabled_color" : "red",
-		"font": "G15",
+		"font_family": "G15",
 		"font_align" : "right", 
 		"font_valign" : "bottom",
 		"border_radius" : 15,
@@ -110,7 +88,7 @@ def main(args):
 		}
 	
 	_rect = pg.Rect(255,30,100,50)
-	checkbox = CheckBox(_rect,'Hola', True, style)
+	checkbox = CheckBox(_rect,'Hola', state=True, style=style)
 	while 1:
 		root.fill((35,35,70))
 		for event in pg.event.get():
@@ -118,7 +96,7 @@ def main(args):
 				sys.exit()
 				
 		checkbox.draw(root)
-		print(checkbox.state)
+		#print(checkbox.state)
 		pg.display.update()
 	
 	return 0
