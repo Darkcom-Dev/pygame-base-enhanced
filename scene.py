@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-import pygame
-import config as cfg
 
 class Scene (object):
 	"""Representa un escena abstracta del videojuego.

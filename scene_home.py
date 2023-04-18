@@ -4,12 +4,11 @@
 # Módulos
 import scene
 
-import pygame
+import pygame as pg
 
 import math
 import random
 import text_presets as preset
-import font
 import config as cfg
 import button as btn
 import scene_manager
@@ -30,7 +29,7 @@ class SceneHome(scene.Scene):
 		self.dir = director
 
 		self.mouse = tuple()
-		self.clock = pygame.time.Clock()
+		self.clock = pg.time.Clock()
 		self.fps = self.clock.get_fps()
 		self.info = str()
 		self.ticks = int()
@@ -44,35 +43,36 @@ class SceneHome(scene.Scene):
 		self.subevent_text.text = "Sub Event 1"
 		self.event_text = preset.event_text
 		
-		self.button = btn.Button([cfg.WIDTH/2, cfg.HEIGHT, 140, 40])
+		button_rect = pg.Rect(cfg.WIDTH/2, cfg.HEIGHT, 140, 40)
+		self.button = btn.Button(button_rect)
 
 	def on_update(self):
 		""" on_update funciona exactamente igual que el metodo Update de Unity """
-		self.mouse = pygame.mouse.get_pos()
-		self.clock = pygame.time.Clock()
+		self.mouse = pg.mouse.get_pos()
+		self.clock = pg.time.Clock()
 		self.fps = self.clock.get_fps()
-		self.ticks = pygame.time.get_ticks()
+		self.ticks = pg.time.get_ticks()
 		
-		self.info = "ticks: " + str(self.ticks) + " mouse pos: " + str(self.mouse) + " fps: " + str(self.fps)
+		self.info = f"ticks: {str(self.ticks)} mouse pos: {str(self.mouse)} fps: {str(self.fps)}"
 
 
 	def on_event(self):
 		""" on_event funciona como Update, pero para efectos de teclado """
 
-		if self.dir.keys[pygame.K_LEFT]:
+		if self.dir.keys[pg.K_LEFT]:
 			self.event_text.text = "Key_left"
-		if self.dir.keys[pygame.K_RIGHT]:
+		if self.dir.keys[pg.K_RIGHT]:
 			self.event_text.text = "Key_right"
-		if self.dir.keys[pygame.K_1]:
+		if self.dir.keys[pg.K_1]:
 			self.event_text.text = "KEY1 from home"
 			scene_manager.change_scene("scene_title")
-		if self.dir.keys[pygame.K_2]:
+		if self.dir.keys[pg.K_2]:
 			scene_manager.change_scene("scene_credits")
-		if self.dir.keys[pygame.K_3]:
+		if self.dir.keys[pg.K_3]:
 			scene_manager.change_scene("scene_sound_test")
-		if self.dir.keys[pygame.K_4]:
+		if self.dir.keys[pg.K_4]:
 			scene_manager.change_scene("scene_physics")
-		mouse = pygame.mouse.get_pressed()
+		mouse = pg.mouse.get_pressed()
 
 		if mouse == (1,0,0):
 			self.event_text.text= "Click Izquierdo"
@@ -84,13 +84,13 @@ class SceneHome(scene.Scene):
 		
 		self.button.draw(screen)
 		
-		self.event_text.position = (math.sin(pygame.time.get_ticks()/1000) * cfg.WIDTH/4 + cfg.WIDTH/2, random.randrange((cfg.HEIGHT/2) -2,(cfg.HEIGHT/2) +2))
+		self.event_text.position = (math.sin(pg.time.get_ticks()/1000) * cfg.WIDTH/4 + cfg.WIDTH/2, random.randrange((cfg.HEIGHT/2) -2,(cfg.HEIGHT/2) +2))
 		self.event_text.draw(screen, "chromatic",2)
 		
-		sintime = math.sin(pygame.time.get_ticks()/1000)*128 + 128
-		costime = math.cos(pygame.time.get_ticks()/1000)*128 + 128
+		sintime = math.sin(pg.time.get_ticks()/1000)*128 + 128
+		costime = math.cos(pg.time.get_ticks()/1000)*128 + 128
 		self.color = (255,costime,sintime)
-		distance = math.sin(pygame.time.get_ticks()/1000)*3
+		distance = math.sin(pg.time.get_ticks()/1000)*3
 		self.subevent_text.draw(screen, "chromatic", distance)
 
 		self.history_text.draw(screen)
@@ -124,16 +124,17 @@ class SceneHome(scene.Scene):
 			self.caption_text.color = (80,80,255)
 
 		# surface, color, rect(),width,border_radius,
-		posicion = screen.get_width()/2, screen.get_height()/2, 140, 40
-		pygame.draw.rect(screen,(175,41,15),posicion,3,10)
+		posicion = pg.Rect(screen.get_width()/2, screen.get_height()/2, 140, 40)
+		color = pg.Color(175,41,15)
+		pg.draw.rect(screen,color,posicion,3,10)
 
-		self.ticks -= pygame.time.get_ticks()
+		self.ticks -= pg.time.get_ticks()
 		self.info_text.text = self.info + str(self.ticks) + "\n" +str(self.event)
 		self.info_text.color = (255,255,255)
 		self.info_text.draw(screen, "outline", 2)
 
 		# por alguna razon la pantalla permanece sucia cuando se actualiza la ventana
-		pygame.display.flip()
+		pg.display.flip()
 
 # ---------------------------------------------------------------------
 

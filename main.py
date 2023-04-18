@@ -3,7 +3,6 @@
 
 # Módulos
 import pygame
-import director
 from scene_manager import change_scene
 
 """
