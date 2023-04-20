@@ -56,7 +56,7 @@ class Director:
 		self.keys = None
 		
 		self.button = ''
-		
+		self.joybutton_down = False
 		self.horizontal = 0
 		self.vertical = 0
 
@@ -82,98 +82,14 @@ class Director:
 								print(f'saved volume at: {pg.mixer.music.get_volume()}')
 						
 						self.quit()
+				self.joybutton_down = event.type == pg.JOYBUTTONDOWN
 
 			self.keys = pg.key.get_pressed()
 			#Aqui es donde se deben hacer los eventos de las teclas
 			# Tendrá la configuracion de botones de SNES
 			
-			if self.J1 != None:
-				# Doble boton a la vez
-				if self.keys[pg.K_SPACE] and self.keys[pg.K_LCTRL]:
-					print('AB')
-					self.button = 'AB'
-				elif self.keys[pg.K_LSHIFT] and self.keys[pg.K_LALT]:
-					print('XY')
-					self.button = 'XY'
-				elif self.keys[pg.K_q] and self.keys[pg.K_e]:
-					print('LR')
-					self.button = 'LR'
-				
-				# Posibilidades de un solo boton
-				elif self.keys[pg.K_SPACE] or self.J1.get_button(2):
-					self.button = 'A'
-				elif self.keys[pg.K_LCTRL] or self.J1.get_button(1):
-					self.button = 'B'
-				elif self.keys[pg.K_LSHIFT] or self.J1.get_button(3):
-					self.button = 'X'
-				elif self.keys[pg.K_LALT] or self.J1.get_button(0):
-					self.button = 'Y'
-				elif self.keys[pg.K_q] or self.J1.get_button(4):
-					self.button = 'L'
-				elif self.keys[pg.K_e] or self.J1.get_button(5):
-					self.button = 'R'
-				else:
-					self.button = None
-				
-				# Eje horizontal
-				if self.keys[pg.K_a] or self.keys[pg.K_LEFT] or self.J1.get_hat(0)[0] == -1:
-					self.horizontal = -1
-				elif self.keys[pg.K_d] or self.keys[pg.K_RIGHT] or self.J1.get_hat(0)[0] == 1:
-					self.horizontal = 1
-				else:
-					self.horizontal = 0
-				
-				# Eje vertical
-				if self.keys[pg.K_w] or self.keys[pg.K_UP] or self.J1.get_hat(0)[1] == 1:
-					self.vertical = 1
-				elif self.keys[pg.K_s] or self.keys[pg.K_DOWN] or self.J1.get_hat(0)[1] == -1:
-					self.vertical = -1
-				else:
-					self.vertical = 0
-			else:
-				# Doble boton a la vez
-				if self.keys[pg.K_SPACE] and self.keys[pg.K_LCTRL]:
-					print('AB')
-					self.button = 'AB'
-				elif self.keys[pg.K_LSHIFT] and self.keys[pg.K_LALT]:
-					print('XY')
-					self.button = 'XY'
-				elif self.keys[pg.K_q] and self.keys[pg.K_e]:
-					print('LR')
-					self.button = 'LR'
-				
-				# Posibilidades de un solo boton
-				elif self.keys[pg.K_SPACE]:
-					self.button = 'A'
-				elif self.keys[pg.K_LCTRL]:
-					self.button = 'B'
-				elif self.keys[pg.K_LSHIFT]:
-					self.button = 'X'
-				elif self.keys[pg.K_LALT]:
-					self.button = 'Y'
-				elif self.keys[pg.K_q]:
-					self.button = 'L'
-				elif self.keys[pg.K_e]:
-					self.button = 'R'
-				else:
-					self.button = None
-				
-				
-				# Eje horizontal
-				if self.keys[pg.K_a] or self.keys[pg.K_LEFT]:
-					self.horizontal = -1
-				elif self.keys[pg.K_d] or self.keys[pg.K_RIGHT]:
-					self.horizontal = 1
-				else:
-					self.horizontal = 0
-				
-				# Eje vertical
-				if self.keys[pg.K_w] or self.keys[pg.K_UP]:
-					self.vertical = 1
-				elif self.keys[pg.K_s] or self.keys[pg.K_DOWN]:
-					self.vertical = -1
-				else:
-					self.vertical = 0
+			# detecta eventos de teclado y joystick
+			self.handle_controller_input()
 			
 			# detecta eventos
 			self.scene.on_event()
@@ -185,6 +101,86 @@ class Director:
 			self.scene.on_draw(self.screen)
 			pg.display.flip()
 
+	
+	def handle_controller_input(self):
+
+		if self.J1 is not None:
+			horizontal_joystick = self.J1.get_hat(0)[0]
+			vertical_joystick = self.J1.get_hat(0)[1]
+
+			self.button = self.get_joystick_button(self.J1)if self.joybutton_down else self.get_keyboard_button(self.keys)
+			# Eje horizontal
+			self.horizontal = horizontal_joystick if horizontal_joystick != 0 else	self.get_horizontal_direction(self.keys)
+			# Eje vertical
+			self.vertical = vertical_joystick if vertical_joystick != 0	else self.get_vertical_direction(self.keys)
+
+		else:				
+			self.button = self.get_keyboard_button(self.keys)
+			
+			# Eje horizontal
+			self.horizontal = self.get_horizontal_direction(self.keys)
+
+			# Eje vertical
+			self.vertical = self.get_vertical_direction(self.keys)
+		
+			
+	def get_keyboard_button(self, keys):
+		if keys[pg.K_SPACE] and keys[pg.K_LCTRL]:return 'AB'
+		elif keys[pg.K_LSHIFT] and keys[pg.K_LALT]:return 'XY'
+		elif keys[pg.K_q] and keys[pg.K_e]:return 'LR'
+		elif keys[pg.K_SPACE]:return 'A'
+		elif keys[pg.K_LCTRL]:return 'B'
+		elif keys[pg.K_LSHIFT]:return 'X'
+		elif keys[pg.K_LALT]:return 'Y'
+		elif keys[pg.K_q]:return 'L'
+		elif keys[pg.K_e]:return 'R'		
+		return None
+
+	def get_joystick_button(self, joystick):
+		if joystick.get_button(2):return 'A'
+		elif joystick.get_button(1):return 'B'
+		elif joystick.get_button(3):return 'X'
+		elif joystick.get_button(0):return 'Y'
+		elif joystick.get_button(4):return 'L'
+		elif joystick.get_button(5):return 'R'
+		return None
+	
+	def get_vertical_direction(self, keys):
+		# Eje vertical
+		vertical_keys = {
+		    pg.K_w: 1,
+		    pg.K_UP: 1,
+		    pg.K_s: -1,
+		    pg.K_DOWN: -1
+		}
+
+		vertical_direction = 0
+		
+		for key, value in vertical_keys.items():
+			if self.keys[key]:
+				vertical_direction = value
+				break
+		
+		return vertical_direction
+	
+	def get_horizontal_direction(self, keys):
+		# Eje horizontal
+		horizontal_keys = {
+		    pg.K_d: 1,
+		    pg.K_RIGHT: 1,
+		    pg.K_a: -1,
+		    pg.K_LEFT: -1
+		}
+
+		horizontal_direction = 0
+		
+		for key, value in horizontal_keys.items():
+			if self.keys[key]:
+				horizontal_direction = value
+				break
+		
+		return horizontal_direction
+	
 	def change_scene(self, scene):
 		'''Altera la escena actual.'''
 		self.scene = scene

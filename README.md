@@ -20,5 +20,8 @@ Pygame base project with extra classes to facilitate some task
 - added int and float support for spinbox widget.
 - maximum chars into entry widget is more accurate
 
+## Known bugs
+- style parameter dont work in checkbox and spinbox
+
 ## Improvements
 - added style dictionary similar to CSS into entry widget.
