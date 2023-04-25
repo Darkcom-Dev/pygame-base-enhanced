@@ -69,17 +69,13 @@ class Director:
 			time = self.clock.tick(cfg.FrameTicks)
 			# Eventos de Salida
 			for event in pg.event.get():
-				if event.type == pg.QUIT:
-					self.quit()
+				if event.type == pg.QUIT:	self.quit()
 				if event.type == pg.KEYDOWN:
 					if event.key == pg.K_ESCAPE:
 						print(f'current volume: {float(pg.mixer.music.get_volume())}, bgm volume: {cfg.BgmVolume}')
 						if float(pg.mixer.music.get_volume()) != cfg.BgmVolume:
-							
-							cfg.set_volume(pg.mixer.music.get_volume())
-						
-							if cfg.DebugMode:
-								print(f'saved volume at: {pg.mixer.music.get_volume()}')
+							cfg.set_volume(pg.mixer.music.get_volume())						
+							if cfg.DebugMode:	print(f'saved volume at: {pg.mixer.music.get_volume()}')
 						
 						self.quit()
 				self.joybutton_down = event.type == pg.JOYBUTTONDOWN
@@ -137,8 +133,8 @@ class Director:
 		return None
 
 	def get_joystick_button(self, joystick):
-		if joystick.get_button(2):return 'A'
-		elif joystick.get_button(1):return 'B'
+		if joystick.get_button(1):return 'A'
+		elif joystick.get_button(2):return 'B'
 		elif joystick.get_button(3):return 'X'
 		elif joystick.get_button(0):return 'Y'
 		elif joystick.get_button(4):return 'L'
