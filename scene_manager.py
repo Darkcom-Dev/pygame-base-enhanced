@@ -8,7 +8,7 @@
 - Hacer un sistema que carge las escenas desde el archivo de configuracion
 - y que evite ser hardcodeado
 """
-import scene_title
+import scene_joystick_display
 import scene_home
 import scene_credits
 import scene_sound_test
@@ -25,7 +25,7 @@ def change_scene(scene):
 	dcr = director.Director()
 	scene_map = {
         "scene_home": scene_home.SceneHome,
-        "scene_title": scene_title.SceneTitle,
+        "scene_title": scene_joystick_display.SceneJoystickDisplay,
         "scene_credits": scene_credits.SceneCredits,
         "scene_sound_test": scene_sound_test.SceneSoundTest,
         "scene_physics": scene_physics.ScenePhysicsTest
