@@ -130,7 +130,12 @@ def main(args):
 	
 	
 	# El menu es un diccionario con el nombre del boton y el comando a ejecutar
-	menu = {'Nueva campaña': new_campaign, 'Cargar' : load_func, 'Opciones': options_func, 'Créditos': credits_function}
+	menu = {
+		'Nueva campaña': new_campaign, 
+		'Cargar' : load_func, 
+		'Opciones': options_func, 
+		'Créditos': credits_function
+		}
 	
 	menu_rect = pg.Rect(10,76,200,314)
 	menu_ui = Menu(menu, menu_rect, 'vertical', 10,5)
